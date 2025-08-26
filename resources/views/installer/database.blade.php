@@ -7,7 +7,16 @@
     $step = 3;
 @endphp
 
-<h2 class="text-2xl font-bold mb-6">Database Configuration</h2>
+<div class="mb-6">
+    <h2 class="text-2xl font-bold mb-2">Database Configuration</h2>
+    @if(isset($productName) && $productName)
+        <p class="text-gray-600">Installing: <strong>{{ $productName }}</strong> 
+        @if(isset($productVersion) && $productVersion)
+            (Version {{ $productVersion }})
+        @endif
+        </p>
+    @endif
+</div>
 
 <form action="{{ route('installer.database.setup') }}" method="POST" class="space-y-6">
     @csrf

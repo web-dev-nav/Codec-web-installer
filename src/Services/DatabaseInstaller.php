@@ -11,7 +11,7 @@ use PDOException;
 
 class DatabaseInstaller
 {
-    public function install(array $credentials, string $licenseKey, string $email): array
+    public function install(array $credentials, string $productData): array
     {
         try {
             // Test database connection
@@ -20,14 +20,8 @@ class DatabaseInstaller
                 return $connectionTest;
             }
 
-            // Download SQL file from API
-            $sqlDownload = $this->downloadSqlFile($licenseKey, $email);
-            if (!$sqlDownload['success']) {
-                return $sqlDownload;
-            }
-
-            // Execute SQL file
-            $sqlExecution = $this->executeSqlFile($credentials, $sqlDownload['sql_content']);
+            // Execute SQL from product_data
+            $sqlExecution = $this->executeSqlFile($credentials, $productData);
             if (!$sqlExecution['success']) {
                 return $sqlExecution;
             }
@@ -77,46 +71,6 @@ class DatabaseInstaller
         }
     }
 
-    protected function downloadSqlFile(string $licenseKey, string $email): array
-    {
-        try {
-            $response = Http::timeout(config('installer.sql_api.timeout', 60))
-                ->post(config('installer.sql_api.url'), [
-                    'license_key' => $licenseKey,
-                    'email' => $email,
-                    'domain' => request()->getHost(),
-                ]);
-
-            if ($response->successful()) {
-                $data = $response->json();
-                
-                if (isset($data['sql_content'])) {
-                    return [
-                        'success' => true,
-                        'sql_content' => $data['sql_content'],
-                        'message' => 'SQL file downloaded successfully',
-                    ];
-                }
-            }
-
-            return [
-                'success' => false,
-                'message' => 'Failed to download SQL file from server',
-            ];
-
-        } catch (\Exception $e) {
-            Log::error('SQL download failed', [
-                'license_key' => $licenseKey,
-                'email' => $email,
-                'error' => $e->getMessage(),
-            ]);
-
-            return [
-                'success' => false,
-                'message' => 'Failed to download SQL file: ' . $e->getMessage(),
-            ];
-        }
-    }
 
     protected function executeSqlFile(array $credentials, string $sqlContent): array
     {

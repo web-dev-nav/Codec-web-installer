@@ -28,11 +28,11 @@ Publish the configuration file:
 php artisan vendor:publish --tag=installer-config
 ```
 
-Update your `.env` file with the API endpoints:
+Update your `.env` file with the API endpoint and product ID:
 
 ```env
-INSTALLER_LICENSE_API_URL=https://api.yoursite.com/verify-license
-INSTALLER_SQL_API_URL=https://api.yoursite.com/download-sql
+INSTALLER_LICENSE_API_URL=https://api.yoursite.com/api/verify-license
+INSTALLER_PRODUCT_ID=1
 ```
 
 ## Usage
@@ -49,42 +49,42 @@ Visit `/installer` in your browser to start the installation process.
 4. **Database Setup**: Configure database connection and import data
 5. **Completion**: Installation summary and next steps
 
-### 3. API Endpoints
+### 3. API Endpoint
 
-Your server should provide these API endpoints:
+Your server should provide this API endpoint:
 
 #### License Verification Endpoint
 ```
-POST /verify-license
+POST /api/verify-license
+Content-Type: application/json
+
 {
-    "license_key": "XXXX-XXXX-XXXX-XXXX",
-    "email": "user@example.com",
-    "domain": "example.com",
-    "ip": "192.168.1.1"
+    "license_key": "DYTIOHVHHABDQVOH",
+    "product_id": 1
 }
 
-Response:
+Success Response:
 {
-    "valid": true,
+    "success": true,
     "message": "License verified successfully",
-    "license_data": {...}
+    "product_id": 1,
+    "license_id": 123,
+    "product_data": "SQL content for installation",
+    "product_name": "Test Website",
+    "product_version": "1.0.0",
+    "allowed_domains": 3,
+    "license_status": "active",
+    "expires_at": "2025-01-12 10:30:00"
+}
+
+Error Response:
+{
+    "success": false,
+    "message": "Invalid license key"
 }
 ```
 
-#### SQL Download Endpoint
-```
-POST /download-sql
-{
-    "license_key": "XXXX-XXXX-XXXX-XXXX",
-    "email": "user@example.com",
-    "domain": "example.com"
-}
-
-Response:
-{
-    "sql_content": "CREATE TABLE users (...); INSERT INTO..."
-}
-```
+**Note:** The `product_data` field contains the SQL content that will be imported into the database during installation.
 
 ## Configuration Options
 
@@ -94,7 +94,7 @@ Customize requirements in `config/installer.php`:
 
 ```php
 'requirements' => [
-    'php' => '8.1.0',
+    'php' => '8.2.0',
     'extensions' => [
         'PDO', 'cURL', 'OpenSSL', 'BCMath', 'Ctype',
         'Fileinfo', 'JSON', 'Mbstring', 'Tokenizer', 'XML', 'ZIP'
@@ -134,8 +134,8 @@ After successful installation, a lock file is created at `storage/installer.lock
 
 ## Requirements
 
-- PHP 8.1 or higher
-- Laravel 10.0 or higher
+- PHP 8.2 or higher
+- Laravel 10.0 or higher (supports Laravel 12.x)
 - Required PHP extensions (see configuration)
 - Writable storage directories
 

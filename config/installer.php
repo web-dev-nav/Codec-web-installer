@@ -17,25 +17,23 @@ return [
     |--------------------------------------------------------------------------
     |
     | Configuration for license verification API.
+    | The API now returns SQL content directly in the license verification response.
     |
     */
     'license_api' => [
-        'url' => env('INSTALLER_LICENSE_API_URL', 'https://api.yoursite.com/verify-license'),
-        'timeout' => 30,
+        'url' => env('INSTALLER_LICENSE_API_URL', 'https://api.yoursite.com/api/verify-license'),
+        'timeout' => 60,
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | SQL Download API Configuration
+    | Product Configuration
     |--------------------------------------------------------------------------
     |
-    | Configuration for downloading SQL files after license verification.
+    | Product ID for license verification.
     |
     */
-    'sql_api' => [
-        'url' => env('INSTALLER_SQL_API_URL', 'https://api.yoursite.com/download-sql'),
-        'timeout' => 60,
-    ],
+    'product_id' => env('INSTALLER_PRODUCT_ID', 1),
 
     /*
     |--------------------------------------------------------------------------
@@ -46,7 +44,7 @@ return [
     |
     */
     'requirements' => [
-        'php' => '8.1.0',
+        'php' => '8.2.0',
         'extensions' => [
             'PDO',
             'cURL',

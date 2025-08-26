@@ -59,18 +59,17 @@ class InstallerController extends Controller
     public function verifyLicense(Request $request)
     {
         $request->validate([
-            'license_key' => 'required|string',
-            'email' => 'required|email',
+            'license_key' => 'required|string|min:12|max:32',
         ]);
 
-        $result = $this->licenseValidator->verify(
-            $request->license_key,
-            $request->email
-        );
+        $result = $this->licenseValidator->verify($request->license_key);
 
         if ($result['valid']) {
-            Session::put('installer.license', $request->license_key);
-            Session::put('installer.email', $request->email);
+            Session::put('installer.license_key', $request->license_key);
+            Session::put('installer.license_data', $result['license_data']);
+            Session::put('installer.product_data', $result['product_data']);
+            Session::put('installer.product_name', $result['product_name']);
+            Session::put('installer.product_version', $result['product_version']);
             Session::put('installer.current_step', 3);
             return redirect()->route('installer.database');
         }
@@ -81,7 +80,9 @@ class InstallerController extends Controller
     public function database()
     {
         $this->ensureStep(3);
-        return view('installer::database');
+        $productName = Session::get('installer.product_name');
+        $productVersion = Session::get('installer.product_version');
+        return view('installer::database', compact('productName', 'productVersion'));
     }
 
     public function setupDatabase(Request $request)
@@ -95,12 +96,13 @@ class InstallerController extends Controller
         ]);
 
         $credentials = $request->only(['db_host', 'db_port', 'db_name', 'db_username', 'db_password']);
+        $productData = Session::get('installer.product_data');
         
-        $result = $this->databaseInstaller->install(
-            $credentials,
-            Session::get('installer.license'),
-            Session::get('installer.email')
-        );
+        if (!$productData) {
+            return back()->withErrors(['database' => 'Product data not found. Please verify your license again.']);
+        }
+        
+        $result = $this->databaseInstaller->install($credentials, $productData);
 
         if ($result['success']) {
             $this->createLockFile();
