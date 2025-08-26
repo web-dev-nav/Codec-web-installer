@@ -1,13 +1,13 @@
 {
-    "name": "your-vendor/laravel-installer",
-    "description": "WordPress-like installer package for Laravel applications",
+    "name": "codelone/codec-web-installer",
+    "description": "Codec Web Installer - WordPress-like installer package for Laravel applications",
     "type": "library",
     "keywords": ["laravel", "installer", "setup", "deployment"],
     "license": "MIT",
     "authors": [
         {
-            "name": "Your Name",
-            "email": "your.email@example.com"
+            "name": "Navjot",
+            "email": "support@codelone.com"
         }
     ],
     "require": {
@@ -22,18 +22,18 @@
     },
     "autoload": {
         "psr-4": {
-            "YourVendor\\LaravelInstaller\\": "src/"
+            "Codelone\\CodecWebInstaller\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "YourVendor\\LaravelInstaller\\Tests\\": "tests/"
+            "Codelone\\CodecWebInstaller\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "YourVendor\\LaravelInstaller\\InstallerServiceProvider"
+                "Codelone\\CodecWebInstaller\\InstallerServiceProvider"
             ]
         }
     },
