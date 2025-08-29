@@ -94,7 +94,7 @@ class CustomizerController extends Controller
         // Self-destruct: Delete admin files and create lock
         $this->selfDestruct();
         
-        return redirect('/')->with('success', 'Installer customized successfully! Admin interface has been permanently removed.');
+        return redirect()->route('installer.welcome')->with('success', 'Installer customized successfully! Admin interface has been permanently removed.');
     }
 
     public function download()
@@ -132,8 +132,20 @@ class CustomizerController extends Controller
     {
         $config = file_get_contents(__DIR__ . '/../../config/installer.php');
         
-        // Replace requirements section
-        $requirementsStr = var_export($requirements, true);
+        // Format requirements array properly
+        $requirementsStr = "[\n        'php' => '{$requirements['php']}',\n";
+        $requirementsStr .= "        'extensions' => [\n";
+        foreach ($requirements['extensions'] as $ext) {
+            $requirementsStr .= "            '$ext',\n";
+        }
+        $requirementsStr .= "        ],\n";
+        $requirementsStr .= "        'folders' => [\n";
+        foreach ($requirements['folders'] as $path => $permission) {
+            $requirementsStr .= "            '$path' => '$permission',\n";
+        }
+        $requirementsStr .= "        ],\n    ]";
+        
+        // Replace requirements section with properly formatted array
         $config = preg_replace(
             "/'requirements' => \[.*?\],/s",
             "'requirements' => $requirementsStr,",
