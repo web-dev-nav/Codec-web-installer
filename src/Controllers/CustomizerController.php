@@ -29,9 +29,31 @@ class CustomizerController extends Controller
     {
         $currentConfig = config('installer');
         $availableExtensions = [
+            // Core extensions
             'PDO', 'cURL', 'OpenSSL', 'BCMath', 'Ctype', 'Fileinfo', 
-            'JSON', 'Mbstring', 'Tokenizer', 'XML', 'ZIP', 'GD', 
-            'Imagick', 'Redis', 'Memcached', 'MongoDB'
+            'JSON', 'Mbstring', 'Tokenizer', 'XML', 'ZIP', 'Hash',
+            'Filter', 'PCRE', 'Session', 'SPL', 'Standard',
+            
+            // Database extensions
+            'MySQLi', 'PDO_MySQL', 'PDO_SQLite', 'PDO_PostgreSQL', 'SQLite3',
+            'MongoDB', 'Redis', 'Memcached',
+            
+            // Image/Media extensions  
+            'GD', 'Imagick', 'Exif', 'FFMpeg',
+            
+            // Compression extensions
+            'Zlib', 'BZip2', 'RaR',
+            
+            // Encryption/Security
+            'Sodium', 'LibSodium', 'Mcrypt',
+            
+            // Web/Network extensions
+            'Sockets', 'FTP', 'SSH2', 'OAuth',
+            
+            // Other common extensions
+            'Intl', 'LDAP', 'SOAP', 'XSL', 'SimpleXML', 'DOM',
+            'Calendar', 'Gettext', 'IMAP', 'SNMP', 'Tidy',
+            'PCNTL', 'POSIX', 'SysVSem', 'SysVShm', 'ShmOP'
         ];
         
         return view('installer::customize.single', compact('currentConfig', 'availableExtensions'));
