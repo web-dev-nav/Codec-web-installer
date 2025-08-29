@@ -1,6 +1,6 @@
 <?php
 
-namespace YourVendor\LaravelInstaller;
+namespace Codelone\CodecWebInstaller;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
@@ -41,7 +41,7 @@ class InstallerServiceProvider extends ServiceProvider
             Route::group([
                 'prefix' => config('installer.route_prefix', 'installer'),
                 'middleware' => ['web'],
-                'namespace' => 'YourVendor\LaravelInstaller\Controllers',
+                'namespace' => 'Codelone\CodecWebInstaller\Controllers',
             ], function () {
                 $this->loadRoutesFrom(__DIR__.'/../routes/installer.php');
             });

@@ -1,6 +1,6 @@
 <?php
 
-namespace YourVendor\LaravelInstaller\Middleware;
+namespace Codelone\CodecWebInstaller\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;

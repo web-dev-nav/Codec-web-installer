@@ -1,13 +1,13 @@
 <?php
 
-namespace YourVendor\LaravelInstaller\Controllers;
+namespace Codelone\CodecWebInstaller\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Session;
-use YourVendor\LaravelInstaller\Services\SystemChecker;
-use YourVendor\LaravelInstaller\Services\LicenseValidator;
-use YourVendor\LaravelInstaller\Services\DatabaseInstaller;
+use Codelone\CodecWebInstaller\Services\SystemChecker;
+use Codelone\CodecWebInstaller\Services\LicenseValidator;
+use Codelone\CodecWebInstaller\Services\DatabaseInstaller;
 
 class InstallerController extends Controller
 {

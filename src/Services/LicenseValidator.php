@@ -1,6 +1,6 @@
 <?php
 
-namespace YourVendor\LaravelInstaller\Services;
+namespace Codelone\CodecWebInstaller\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
