@@ -14,6 +14,7 @@ class LicenseValidator
                 ->withHeaders([
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
+                    'User-Agent' => 'Codelone-Installer/1.0',
                 ])
                 ->post(config('installer.license_api.url'), [
                     'license_key' => $licenseKey,
