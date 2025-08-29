@@ -1,8 +1,8 @@
 <?php
 
-use YourVendor\LaravelInstaller\Controllers\InstallerController;
+use Codelone\CodecWebInstaller\Controllers\InstallerController;
 
-Route::middleware(['installer.check'])->group(function () {
+Route::group([], function () {
     Route::get('/', [InstallerController::class, 'welcome'])->name('installer.welcome');
     Route::get('/requirements', [InstallerController::class, 'requirements'])->name('installer.requirements');
     Route::post('/requirements', [InstallerController::class, 'checkRequirements'])->name('installer.requirements.check');

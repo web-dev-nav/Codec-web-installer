@@ -15,14 +15,12 @@ class InstallerServiceProvider extends ServiceProvider
         $this->app->singleton(Services\LicenseValidator::class);
         $this->app->singleton(Services\DatabaseInstaller::class);
         
-        $this->app->singleton('installer.check', function ($app) {
-            return new Middleware\InstallerMiddleware();
-        });
+        $this->app['router']->aliasMiddleware('installer.check', Middleware\InstallerMiddleware::class);
     }
 
     public function boot()
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'installer');
+        $this->loadViewsFrom(__DIR__.'/../resources/views/installer', 'installer');
         
         $this->publishes([
             __DIR__.'/../config/installer.php' => config_path('installer.php'),
@@ -38,13 +36,20 @@ class InstallerServiceProvider extends ServiceProvider
     protected function registerRoutes()
     {
         if (! $this->app->routesAreCached()) {
-            Route::group([
-                'prefix' => config('installer.route_prefix', 'installer'),
-                'middleware' => ['web'],
-                'namespace' => 'Codelone\CodecWebInstaller\Controllers',
-            ], function () {
-                $this->loadRoutesFrom(__DIR__.'/../routes/installer.php');
-            });
+            Route::prefix(config('installer.route_prefix', 'installer'))
+                ->middleware(['web'])
+                ->group(function() {
+                    $controller = \Codelone\CodecWebInstaller\Controllers\InstallerController::class;
+                    
+                    Route::get('/', [$controller, 'welcome'])->name('installer.welcome');
+                    Route::get('/requirements', [$controller, 'requirements'])->name('installer.requirements');
+                    Route::post('/requirements', [$controller, 'checkRequirements'])->name('installer.requirements.check');
+                    Route::get('/license', [$controller, 'license'])->name('installer.license');
+                    Route::post('/license', [$controller, 'verifyLicense'])->name('installer.license.verify');
+                    Route::get('/database', [$controller, 'database'])->name('installer.database');
+                    Route::post('/database', [$controller, 'setupDatabase'])->name('installer.database.setup');
+                    Route::get('/complete', [$controller, 'complete'])->name('installer.complete');
+                });
         }
     }
 }
