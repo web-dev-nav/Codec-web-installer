@@ -54,6 +54,8 @@
                 
                 <label>Minimum PHP Version:</label>
                 <select name="php_version">
+                    <option value="7.4.0" {{ ($currentConfig['requirements']['php'] ?? '') == '7.4.0' ? 'selected' : '' }}>PHP 7.4.0</option>
+                    <option value="8.0.0" {{ ($currentConfig['requirements']['php'] ?? '') == '8.0.0' ? 'selected' : '' }}>PHP 8.0.0</option>
                     <option value="8.1.0" {{ ($currentConfig['requirements']['php'] ?? '') == '8.1.0' ? 'selected' : '' }}>PHP 8.1.0</option>
                     <option value="8.2.0" {{ ($currentConfig['requirements']['php'] ?? '') == '8.2.0' ? 'selected' : '' }}>PHP 8.2.0</option>
                     <option value="8.3.0" {{ ($currentConfig['requirements']['php'] ?? '') == '8.3.0' ? 'selected' : '' }}>PHP 8.3.0</option>
