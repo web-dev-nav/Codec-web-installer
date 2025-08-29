@@ -36,6 +36,24 @@ class InstallerServiceProvider extends ServiceProvider
     protected function registerRoutes()
     {
         if (! $this->app->routesAreCached()) {
+            // Admin customization routes (self-destructing)
+            if (class_exists('\Codelone\CodecWebInstaller\Controllers\CustomizerController')) {
+                Route::prefix(config('installer.route_prefix', 'installer') . '/customize')
+                    ->middleware(['web'])
+                    ->group(function() {
+                        $customizer = \Codelone\CodecWebInstaller\Controllers\CustomizerController::class;
+                        
+                        Route::get('/', [$customizer, 'dashboard'])->name('installer.customize.dashboard');
+                        Route::get('/requirements', [$customizer, 'requirements'])->name('installer.customize.requirements');
+                        Route::post('/requirements', [$customizer, 'updateRequirements'])->name('installer.customize.requirements.update');
+                        Route::get('/branding', [$customizer, 'branding'])->name('installer.customize.branding');
+                        Route::post('/branding', [$customizer, 'updateBranding'])->name('installer.customize.branding.update');
+                        Route::get('/export', [$customizer, 'export'])->name('installer.customize.export');
+                        Route::post('/download', [$customizer, 'download'])->name('installer.customize.download');
+                    });
+            }
+            
+            // Standard installer routes
             Route::prefix(config('installer.route_prefix', 'installer'))
                 ->middleware(['web', 'installer.check'])
                 ->group(function() {
