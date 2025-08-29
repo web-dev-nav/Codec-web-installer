@@ -102,15 +102,13 @@ class DatabaseInstaller
             // Split SQL content into individual queries
             $queries = $this->splitSqlQueries($sqlContent);
 
-            $pdo->beginTransaction();
-
+            // Execute queries without transaction for MySQL dumps
+            // MySQL dumps often contain DDL statements that auto-commit
             foreach ($queries as $query) {
                 if (trim($query)) {
                     $pdo->exec($query);
                 }
             }
-
-            $pdo->commit();
 
             return [
                 'success' => true,
@@ -118,9 +116,10 @@ class DatabaseInstaller
             ];
 
         } catch (PDOException $e) {
-            if (isset($pdo) && $pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
+            Log::error('SQL execution error', [
+                'error' => $e->getMessage(),
+                'code' => $e->getCode(),
+            ]);
 
             return [
                 'success' => false,
