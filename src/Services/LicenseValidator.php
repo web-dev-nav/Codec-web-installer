@@ -10,15 +10,24 @@ class LicenseValidator
     public function verify(string $licenseKey): array
     {
         try {
+            $apiUrl = config('installer.license_api.url');
+            $productId = config('installer.product_id', 1);
+            
+            Log::info('Attempting license verification', [
+                'api_url' => $apiUrl,
+                'product_id' => $productId,
+                'license_key_length' => strlen($licenseKey),
+            ]);
+            
             $response = Http::timeout(config('installer.license_api.timeout', 60))
                 ->withHeaders([
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
-                    'User-Agent' => 'Codelone-Installer/1.0',
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
                 ])
-                ->post(config('installer.license_api.url'), [
+                ->post($apiUrl, [
                     'license_key' => $licenseKey,
-                    'product_id' => config('installer.product_id', 1),
+                    'product_id' => $productId,
                 ]);
 
             if ($response->successful()) {
