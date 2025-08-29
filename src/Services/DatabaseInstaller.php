@@ -52,6 +52,13 @@ class DatabaseInstaller
         try {
             $dsn = "mysql:host={$credentials['db_host']};port={$credentials['db_port']};dbname={$credentials['db_name']};charset=utf8mb4";
             
+            Log::info('Testing database connection', [
+                'dsn' => $dsn,
+                'username' => $credentials['db_username'],
+                'password_empty' => empty($credentials['db_password']),
+                'password_null' => is_null($credentials['db_password']),
+            ]);
+            
             $pdo = new PDO($dsn, $credentials['db_username'], $credentials['db_password'], [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -100,7 +107,7 @@ class DatabaseInstaller
             ];
 
         } catch (PDOException $e) {
-            if (isset($pdo)) {
+            if (isset($pdo) && $pdo->inTransaction()) {
                 $pdo->rollBack();
             }
 
