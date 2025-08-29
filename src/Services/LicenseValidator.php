@@ -13,6 +13,7 @@ class LicenseValidator
             $response = Http::timeout(config('installer.license_api.timeout', 60))
                 ->withHeaders([
                     'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
                 ])
                 ->post(config('installer.license_api.url'), [
                     'license_key' => $licenseKey,
@@ -44,9 +45,14 @@ class LicenseValidator
                 }
             }
 
+            Log::warning('License verification API error', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+
             return [
                 'valid' => false,
-                'message' => 'Unable to verify license. Please try again.',
+                'message' => 'Unable to verify license. Server returned: ' . $response->status(),
             ];
 
         } catch (\Exception $e) {
