@@ -96,6 +96,7 @@ class InstallerController extends Controller
         ]);
 
         $credentials = $request->only(['db_host', 'db_port', 'db_name', 'db_username', 'db_password']);
+        $credentials['db_password'] = $credentials['db_password'] ?? '';
         $productData = Session::get('installer.product_data');
         
         if (!$productData) {
