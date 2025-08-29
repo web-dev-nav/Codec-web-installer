@@ -37,7 +37,7 @@ class InstallerServiceProvider extends ServiceProvider
     {
         if (! $this->app->routesAreCached()) {
             Route::prefix(config('installer.route_prefix', 'installer'))
-                ->middleware(['web'])
+                ->middleware(['web', 'installer.check'])
                 ->group(function() {
                     $controller = \Codelone\CodecWebInstaller\Controllers\InstallerController::class;
                     

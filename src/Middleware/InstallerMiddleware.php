@@ -11,7 +11,7 @@ class InstallerMiddleware
     {
         // Check if installation is already completed
         if (file_exists(config('installer.lock_file'))) {
-            return response()->view('installer::already-installed', [], 403);
+            return redirect('/')->with('message', 'Installation already completed');
         }
 
         return $next($request);
