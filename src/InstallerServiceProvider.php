@@ -43,13 +43,8 @@ class InstallerServiceProvider extends ServiceProvider
                     ->group(function() {
                         $customizer = \Codelone\CodecWebInstaller\Controllers\CustomizerController::class;
                         
-                        Route::get('/', [$customizer, 'dashboard'])->name('installer.customize.dashboard');
-                        Route::get('/requirements', [$customizer, 'requirements'])->name('installer.customize.requirements');
-                        Route::post('/requirements', [$customizer, 'updateRequirements'])->name('installer.customize.requirements.update');
-                        Route::get('/branding', [$customizer, 'branding'])->name('installer.customize.branding');
-                        Route::post('/branding', [$customizer, 'updateBranding'])->name('installer.customize.branding.update');
-                        Route::get('/export', [$customizer, 'export'])->name('installer.customize.export');
-                        Route::post('/download', [$customizer, 'download'])->name('installer.customize.download');
+                        Route::get('/', [$customizer, 'dashboard'])->name('installer.customize');
+                        Route::post('/', [$customizer, 'update'])->name('installer.customize.update');
                     });
             }
             

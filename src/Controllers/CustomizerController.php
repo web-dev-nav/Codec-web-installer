@@ -28,22 +28,16 @@ class CustomizerController extends Controller
     public function dashboard()
     {
         $currentConfig = config('installer');
-        return view('installer::customize.dashboard', compact('currentConfig'));
-    }
-
-    public function requirements()
-    {
-        $currentConfig = config('installer.requirements');
         $availableExtensions = [
             'PDO', 'cURL', 'OpenSSL', 'BCMath', 'Ctype', 'Fileinfo', 
             'JSON', 'Mbstring', 'Tokenizer', 'XML', 'ZIP', 'GD', 
             'Imagick', 'Redis', 'Memcached', 'MongoDB'
         ];
         
-        return view('installer::customize.requirements', compact('currentConfig', 'availableExtensions'));
+        return view('installer::customize.single', compact('currentConfig', 'availableExtensions'));
     }
 
-    public function updateRequirements(Request $request)
+    public function update(Request $request)
     {
         $request->validate([
             'php_version' => 'required|string',
@@ -51,36 +45,19 @@ class CustomizerController extends Controller
             'folders' => 'array',
             'folders.*.path' => 'required|string',
             'folders.*.permission' => 'required|string',
-        ]);
-
-        $config = [
-            'php' => $request->php_version,
-            'extensions' => $request->extensions ?? [],
-            'folders' => collect($request->folders)->mapWithKeys(function($folder) {
-                return [$folder['path'] => $folder['permission']];
-            })->toArray(),
-        ];
-
-        session(['customizer.requirements' => $config]);
-        
-        return redirect()->route('installer.customize.branding')
-            ->with('success', 'Requirements updated successfully');
-    }
-
-    public function branding()
-    {
-        $currentConfig = config('installer.theme');
-        return view('installer::customize.branding', compact('currentConfig'));
-    }
-
-    public function updateBranding(Request $request)
-    {
-        $request->validate([
             'app_name' => 'required|string|max:255',
             'primary_color' => 'required|string',
             'welcome_title' => 'nullable|string|max:255',
             'welcome_description' => 'nullable|string',
         ]);
+
+        $requirements = [
+            'php' => $request->php_version,
+            'extensions' => $request->extensions ?? [],
+            'folders' => collect($request->folders)->filter()->mapWithKeys(function($folder) {
+                return [$folder['path'] => $folder['permission']];
+            })->toArray(),
+        ];
 
         $branding = [
             'app_name' => $request->app_name,
@@ -89,18 +66,13 @@ class CustomizerController extends Controller
             'welcome_description' => $request->welcome_description,
         ];
 
-        session(['customizer.branding' => $branding]);
+        // Apply changes directly to project files
+        $this->replaceProjectFiles($requirements, $branding);
         
-        return redirect()->route('installer.customize.export')
-            ->with('success', 'Branding updated successfully');
-    }
-
-    public function export()
-    {
-        $requirements = session('customizer.requirements', config('installer.requirements'));
-        $branding = session('customizer.branding', []);
+        // Self-destruct: Delete admin files and create lock
+        $this->selfDestruct();
         
-        return view('installer::customize.export', compact('requirements', 'branding'));
+        return redirect('/')->with('success', 'Installer customized successfully! Admin interface has been permanently removed.');
     }
 
     public function download()
