@@ -111,11 +111,23 @@
                 <textarea name="welcome_description" rows="3" placeholder="This wizard will guide you through the installation process in a few simple steps.">{{ old('welcome_description', 'This wizard will guide you through the installation process in a few simple steps.') }}</textarea>
             </div>
 
+            <!-- Self-Destruct Option -->
+            <div class="section">
+                <h2>After Customization</h2>
+                <label>
+                    <input type="checkbox" name="self_destruct" value="1" checked>
+                    <strong>Self-Destruct:</strong> Delete this customization interface after applying changes (recommended for client delivery)
+                </label>
+                <small style="color: #666; display: block; margin-top: 5px;">
+                    Uncheck if you want to keep this interface for future modifications
+                </small>
+            </div>
+
             <!-- Submit -->
             <div style="text-align: center; padding-top: 20px;">
                 <button type="submit" class="btn btn-danger" style="font-size: 16px; padding: 15px 30px;"
-                        onclick="return confirm('This will permanently customize your installer and delete this interface. Are you sure?')">
-                    🔥 Apply Customization & Self-Destruct
+                        onclick="return confirm('This will apply your customization settings. Continue?')">
+                    🔥 Apply Customization
                 </button>
             </div>
         </form>

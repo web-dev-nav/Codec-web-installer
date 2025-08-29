@@ -91,10 +91,17 @@ class CustomizerController extends Controller
         // Apply changes directly to project files
         $this->replaceProjectFiles($requirements, $branding);
         
-        // Self-destruct: Delete admin files and create lock
-        $this->selfDestruct();
+        $message = 'Installer customized successfully!';
         
-        return redirect()->route('installer.welcome')->with('success', 'Installer customized successfully! Admin interface has been permanently removed.');
+        // Optional self-destruct
+        if ($request->has('self_destruct')) {
+            $this->selfDestruct();
+            $message .= ' Admin interface has been permanently removed.';
+        } else {
+            $message .= ' You can customize again by visiting /installer/customize.';
+        }
+        
+        return redirect()->route('installer.welcome')->with('success', $message);
     }
 
     public function download()
