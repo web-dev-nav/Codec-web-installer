@@ -1,6 +1,6 @@
 # Laravel Installer Package
 
-A WordPress-like installer package for Laravel applications that provides a smooth, multi-step installation process.
+A WordPress-like installer package for Laravel applications that provides a smooth, multi-step installation processES.
 
 ## Features
 
