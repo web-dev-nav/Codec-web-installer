@@ -13,10 +13,17 @@ class LicenseValidator
             $apiUrl = config('installer.license_api.url');
             $productId = config('installer.product_id', 1);
             
-            Log::info('Attempting license verification', [
-                'api_url' => $apiUrl,
+            $requestData = [
+                'license_key' => $licenseKey,
                 'product_id' => $productId,
-                'license_key_length' => strlen($licenseKey),
+                'domain' => $this->getCurrentDomain(),
+                'server_ip' => $this->getServerIp(), 
+                'server_fingerprint' => $this->getServerFingerprint(),
+            ];
+            
+            Log::info('Attempting license verification with installation data', [
+                'api_url' => $apiUrl,
+                'request_data' => $requestData,
             ]);
             
             $response = Http::timeout(config('installer.license_api.timeout', 60))
@@ -25,10 +32,7 @@ class LicenseValidator
                     'Accept' => 'application/json',
                     'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
                 ])
-                ->post($apiUrl, [
-                    'license_key' => $licenseKey,
-                    'product_id' => $productId,
-                ]);
+                ->post($apiUrl, $requestData);
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -103,5 +107,57 @@ class LicenseValidator
     {
         // Validate format based on the example: DYTIOHVHHABDQVOH (16 characters, uppercase letters)
         return strlen($licenseKey) >= 12 && preg_match('/^[A-Z0-9]+$/', $licenseKey);
+    }
+
+    protected function getCurrentDomain(): string
+    {
+        if (isset($_SERVER['HTTP_HOST'])) {
+            return $_SERVER['HTTP_HOST'];
+        }
+        
+        if (isset($_SERVER['SERVER_NAME'])) {
+            return $_SERVER['SERVER_NAME'];
+        }
+        
+        return 'localhost';
+    }
+
+    protected function getServerIp(): string
+    {
+        // Try to get external IP first
+        $externalIp = $this->getExternalIp();
+        if ($externalIp) {
+            return $externalIp;
+        }
+        
+        // Fallback to server IP
+        return $_SERVER['SERVER_ADDR'] ?? '127.0.0.1';
+    }
+
+    protected function getExternalIp(): ?string
+    {
+        try {
+            $response = Http::timeout(5)->get('https://api.ipify.org?format=json');
+            if ($response->successful()) {
+                $data = $response->json();
+                return $data['ip'] ?? null;
+            }
+        } catch (\Exception $e) {
+            // Ignore errors, fallback to server IP
+        }
+        
+        return null;
+    }
+
+    protected function getServerFingerprint(): string
+    {
+        $data = [
+            'php_version' => PHP_VERSION,
+            'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'unknown',
+            'document_root' => $_SERVER['DOCUMENT_ROOT'] ?? '',
+            'os' => PHP_OS,
+        ];
+        
+        return hash('sha256', json_encode($data));
     }
 }
