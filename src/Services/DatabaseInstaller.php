@@ -14,11 +14,22 @@ class DatabaseInstaller
     public function install(array $credentials, string $productData): array
     {
         try {
+            Log::info('Starting database installation', [
+                'host' => $credentials['db_host'],
+                'port' => $credentials['db_port'],
+                'database' => $credentials['db_name'],
+                'username' => $credentials['db_username'],
+                'has_password' => !empty($credentials['db_password']),
+            ]);
+            
             // Test database connection
             $connectionTest = $this->testConnection($credentials);
             if (!$connectionTest['success']) {
+                Log::error('Connection test failed', $connectionTest);
                 return $connectionTest;
             }
+            
+            Log::info('Database connection successful, proceeding with SQL execution');
 
             // Execute SQL from product_data
             $sqlExecution = $this->executeSqlFile($credentials, $productData);
