@@ -70,8 +70,8 @@
             @csrf
             <button type="submit" 
                     class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold"
-                    onclick="return confirm('This action cannot be undone! Are you sure you want to download and destroy the customization interface?')">
-                🔥 Download & Self-Destruct
+                    onclick="return confirm('This action cannot be undone! Are you sure you want to apply customization and destroy the admin interface?')">
+                🔥 Apply & Self-Destruct
             </button>
         </form>
     </div>

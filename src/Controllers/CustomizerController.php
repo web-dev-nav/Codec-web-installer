@@ -108,17 +108,13 @@ class CustomizerController extends Controller
         $requirements = session('customizer.requirements', config('installer.requirements'));
         $branding = session('customizer.branding', []);
 
-        // Generate customized files
-        $customizedFiles = $this->generateCustomizedFiles($requirements, $branding);
-        
-        // Create ZIP
-        $zipPath = storage_path('app/installer-customized.zip');
-        $this->createCustomizedZip($customizedFiles, $zipPath);
+        // Generate and replace files directly in project
+        $this->replaceProjectFiles($requirements, $branding);
         
         // Self-destruct: Delete admin files and create lock
         $this->selfDestruct();
         
-        return response()->download($zipPath, 'customized-installer.zip')->deleteFileAfterSend();
+        return redirect('/')->with('success', 'Installer has been customized and admin interface permanently removed!');
     }
 
     protected function generateCustomizedFiles($requirements, $branding)
@@ -176,23 +172,26 @@ class CustomizerController extends Controller
         return $template;
     }
 
-    protected function createCustomizedZip($files, $zipPath)
+    protected function replaceProjectFiles($requirements, $branding)
     {
-        $zip = new ZipArchive();
-        $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        // Replace config file
+        $configContent = $this->generateConfigFile($requirements, $branding);
+        file_put_contents(__DIR__ . '/../../config/installer.php', $configContent);
         
-        foreach ($files as $path => $content) {
-            $zip->addFromString($path, $content);
+        // Replace welcome view if branding provided
+        if (!empty($branding)) {
+            $welcomeContent = $this->generateWelcomeView($branding);
+            file_put_contents(__DIR__ . '/../../resources/views/installer/welcome.blade.php', $welcomeContent);
         }
         
-        // Add README for replacement instructions
-        $readme = "# Customized Installer Files\n\nReplace the following files in your package:\n\n";
-        foreach (array_keys($files) as $path) {
-            $readme .= "- $path\n";
-        }
-        $zip->addFromString('README.md', $readme);
-        
-        $zip->close();
+        // Log the customization
+        \Log::info('Installer customized', [
+            'timestamp' => now(),
+            'php_version' => $requirements['php'] ?? 'unchanged',
+            'extensions_count' => count($requirements['extensions'] ?? []),
+            'folders_count' => count($requirements['folders'] ?? []),
+            'branding_applied' => !empty($branding),
+        ]);
     }
 
     protected function selfDestruct()
