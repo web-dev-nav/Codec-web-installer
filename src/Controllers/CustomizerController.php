@@ -71,6 +71,7 @@ class CustomizerController extends Controller
             'primary_color' => 'required|string',
             'welcome_title' => 'nullable|string|max:255',
             'welcome_description' => 'nullable|string',
+            'self_destruct' => 'nullable|boolean',
         ]);
 
         $requirements = [
@@ -139,23 +140,36 @@ class CustomizerController extends Controller
     {
         $config = file_get_contents(__DIR__ . '/../../config/installer.php');
         
-        // Format requirements array properly
-        $requirementsStr = "[\n        'php' => '{$requirements['php']}',\n";
-        $requirementsStr .= "        'extensions' => [\n";
-        foreach ($requirements['extensions'] as $ext) {
-            $requirementsStr .= "            '$ext',\n";
-        }
-        $requirementsStr .= "        ],\n";
-        $requirementsStr .= "        'folders' => [\n";
-        foreach ($requirements['folders'] as $path => $permission) {
-            $requirementsStr .= "            '$path' => '$permission',\n";
-        }
-        $requirementsStr .= "        ],\n    ]";
-        
-        // Replace requirements section with properly formatted array
+        // Replace PHP version
         $config = preg_replace(
-            "/'requirements' => \[.*?\],/s",
-            "'requirements' => $requirementsStr,",
+            "/'php' => '[^']+'/",
+            "'php' => '{$requirements['php']}'",
+            $config
+        );
+        
+        // Replace extensions array
+        $extensionsStr = "[\n";
+        foreach ($requirements['extensions'] as $ext) {
+            $extensionsStr .= "            '$ext',\n";
+        }
+        $extensionsStr .= "        ]";
+        
+        $config = preg_replace(
+            "/'extensions' => \[.*?\]/s",
+            "'extensions' => $extensionsStr",
+            $config
+        );
+        
+        // Replace folders array
+        $foldersStr = "[\n";
+        foreach ($requirements['folders'] as $path => $permission) {
+            $foldersStr .= "            '$path' => '$permission',\n";
+        }
+        $foldersStr .= "        ]";
+        
+        $config = preg_replace(
+            "/'folders' => \[.*?\]/s",
+            "'folders' => $foldersStr",
             $config
         );
         
