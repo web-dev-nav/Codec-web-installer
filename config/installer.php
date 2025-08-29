@@ -21,7 +21,7 @@ return [
     |
     */
     'license_api' => [
-        'url' => env('INSTALLER_LICENSE_API_URL', 'https://api.yoursite.com/api/verify-license'),
+        'url' => env('INSTALLER_LICENSE_API_URL', 'https://api.codelone.com/verify-license'),
         'timeout' => 60,
     ],
 

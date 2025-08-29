@@ -59,12 +59,14 @@ class LicenseValidator
             Log::error('License verification failed', [
                 'license_key' => $licenseKey,
                 'product_id' => config('installer.product_id'),
+                'api_url' => config('installer.license_api.url'),
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return [
                 'valid' => false,
-                'message' => 'License verification failed. Please check your internet connection and try again.',
+                'message' => 'License verification failed: ' . $e->getMessage(),
             ];
         }
     }
