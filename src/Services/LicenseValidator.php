@@ -62,6 +62,8 @@ class LicenseValidator
             Log::warning('License verification API error', [
                 'status' => $response->status(),
                 'body' => $response->body(),
+                'request_data' => $requestData,
+                'api_url' => $apiUrl,
             ]);
 
             return [
