@@ -5,7 +5,9 @@
       "Bash(php:*)",
       "Bash(composer:*)",
       "Read(//mnt/d/github/test-installer/**)",
-      "Read(//mnt/d/github/api-license-verification/routes/**)"
+      "Read(//mnt/d/github/api-license-verification/routes/**)",
+      "Bash(chmod:*)",
+      "Read(//mnt/d/github/api-license-verification/resources/views/**)"
     ],
     "deny": [],
     "ask": []
