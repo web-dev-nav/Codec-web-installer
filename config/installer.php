@@ -45,7 +45,7 @@ return [
     |
     */
     'requirements' => [
-        'php' => '8.2.0',
+        'php' => '7.4.0',
         'extensions' => [
             'PDO',
             'cURL',

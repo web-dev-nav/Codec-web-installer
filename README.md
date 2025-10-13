@@ -1,6 +1,12 @@
 # Laravel Installer Package
 
-A WordPress-like installer package for Laravel applications that provides a smooth, multi-step installation processES.
+A WordPress-like installer package for Laravel applications that provides a smooth, multi-step installation process.
+
+## Requirements
+
+- **PHP**: 7.4, 8.0, 8.1, 8.2, 8.3, or 8.4
+- **Laravel**: 8.x, 9.x, 10.x, 11.x, or 12.x
+- **Extensions**: PDO, cURL, OpenSSL, JSON, Mbstring
 
 ## Features
 
@@ -9,6 +15,7 @@ A WordPress-like installer package for Laravel applications that provides a smoo
 - **License Verification**: API-based license validation system
 - **Database Setup**: Automated database configuration and SQL import
 - **Security Features**: Installation lock, CSRF protection, and secure API communication
+- **Wide Compatibility**: Supports PHP 7.4 through 8.4 and Laravel 8 through 12
 
 ## Installation
 
