@@ -4,7 +4,8 @@
       "WebFetch(domain:github.com)",
       "Bash(php:*)",
       "Bash(composer:*)",
-      "Read(//mnt/d/github/test-installer/**)"
+      "Read(//mnt/d/github/test-installer/**)",
+      "Read(//mnt/d/github/api-license-verification/routes/**)"
     ],
     "deny": [],
     "ask": []

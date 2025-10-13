@@ -93,8 +93,14 @@ class DatabaseInstaller
     protected function executeSqlFile(array $credentials, string $sqlContent): array
     {
         try {
+            Log::info('SQL Content received', [
+                'length' => strlen($sqlContent),
+                'first_100_chars' => substr($sqlContent, 0, 100),
+                'type' => gettype($sqlContent),
+            ]);
+
             $dsn = "mysql:host={$credentials['db_host']};port={$credentials['db_port']};dbname={$credentials['db_name']};charset=utf8mb4";
-            
+
             $pdo = new PDO($dsn, $credentials['db_username'], $credentials['db_password'], [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             ]);

@@ -1,6 +1,7 @@
 {
     "name": "codelone/codec-web-installer",
     "description": "Codec Web Installer - WordPress-like installer package for Laravel applications",
+    "version": "1.0.1",
     "type": "library",
     "keywords": ["laravel", "installer", "setup", "deployment"],
     "license": "MIT",
