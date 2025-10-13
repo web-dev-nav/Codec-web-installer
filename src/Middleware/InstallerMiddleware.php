@@ -9,6 +9,11 @@ class InstallerMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
+        // Allow access to the complete page even after installation
+        if ($request->routeIs('installer.complete')) {
+            return $next($request);
+        }
+
         // Check if installation is already completed
         if (file_exists(config('installer.lock_file'))) {
             return redirect('/')->with('message', 'Installation already completed');
