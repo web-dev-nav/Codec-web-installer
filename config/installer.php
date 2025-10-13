@@ -23,6 +23,7 @@ return [
     'license_api' => [
         'url' => env('INSTALLER_LICENSE_API_URL', 'https://api.codelone.com/verify-license'),
         'timeout' => 60,
+        'verify_ssl' => env('INSTALLER_VERIFY_SSL', true), // Set to false for HTTP or local development
     ],
 
     /*

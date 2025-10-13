@@ -3,7 +3,8 @@
     "allow": [
       "WebFetch(domain:github.com)",
       "Bash(php:*)",
-      "Bash(composer:*)"
+      "Bash(composer:*)",
+      "Read(//mnt/d/github/test-installer/**)"
     ],
     "deny": [],
     "ask": []

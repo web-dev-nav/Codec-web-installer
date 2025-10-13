@@ -27,6 +27,9 @@ class LicenseValidator
             ]);
             
             $response = Http::timeout(config('installer.license_api.timeout', 60))
+                ->withOptions([
+                    'verify' => config('installer.license_api.verify_ssl', true),
+                ])
                 ->withHeaders([
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
