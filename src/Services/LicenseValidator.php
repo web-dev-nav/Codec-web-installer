@@ -70,8 +70,12 @@ class LicenseValidator
             ]);
 
             // Try to parse error message from response body
-            $errorData = $response->json();
-            $errorMessage = $errorData['message'] ?? 'Unable to verify license. Server returned: ' . $response->status();
+            try {
+                $errorData = $response->json();
+                $errorMessage = $errorData['message'] ?? 'Unable to verify license. Server returned: ' . $response->status();
+            } catch (\Exception $e) {
+                $errorMessage = 'Unable to verify license. Server returned: ' . $response->status();
+            }
 
             return [
                 'valid' => false,
