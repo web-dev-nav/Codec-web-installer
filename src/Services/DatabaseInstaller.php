@@ -111,8 +111,23 @@ class DatabaseInstaller
             // Execute queries without transaction for MySQL dumps
             // MySQL dumps often contain DDL statements that auto-commit
             foreach ($queries as $query) {
-                if (trim($query)) {
+                $query = trim($query);
+                if (!$query) {
+                    continue;
+                }
+
+                try {
                     $pdo->exec($query);
+                } catch (PDOException $e) {
+                    // Log the error but continue with other queries
+                    // Some errors like "table already exists" can be ignored
+                    if ($e->getCode() !== '42S01') { // Not "Base table or view already exists"
+                        Log::warning('Query execution warning', [
+                            'error' => $e->getMessage(),
+                            'code' => $e->getCode(),
+                            'query_preview' => substr($query, 0, 200),
+                        ]);
+                    }
                 }
             }
 
@@ -136,11 +151,14 @@ class DatabaseInstaller
 
     protected function splitSqlQueries(string $sql): array
     {
-        // Remove comments and split by semicolon
-        $sql = preg_replace('/--.*$/m', '', $sql);
-        $sql = preg_replace('/\/\*.*?\*\//s', '', $sql);
-        
-        return array_filter(array_map('trim', explode(';', $sql)));
+        // Remove SQL comments but preserve special MySQL comments (like /*!40101 ... */)
+        $sql = preg_replace('/--[^\n]*\n/m', "\n", $sql);
+        $sql = preg_replace('/\/\*(?!\!)[^\*]*\*+([^\/*][^\*]*\*+)*\//s', '', $sql);
+
+        // Split by semicolon followed by newline (to avoid splitting within strings)
+        $queries = preg_split('/;\s*[\r\n]+/', $sql);
+
+        return array_filter(array_map('trim', $queries));
     }
 
     protected function updateEnvironmentFile(array $credentials): void
