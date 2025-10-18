@@ -21,7 +21,7 @@ class InstallerServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadViewsFrom(__DIR__.'/../resources/views/installer', 'installer');
-        
+
         $this->publishes([
             __DIR__.'/../config/installer.php' => config_path('installer.php'),
         ], 'installer-config');
@@ -30,7 +30,39 @@ class InstallerServiceProvider extends ServiceProvider
             __DIR__.'/../resources/views' => resource_path('views/vendor/installer'),
         ], 'installer-views');
 
+        // Add installer environment variables if not present
+        $this->addInstallerEnvVariables();
+
         $this->registerRoutes();
+    }
+
+    protected function addInstallerEnvVariables()
+    {
+        $envPath = base_path('.env');
+
+        if (!file_exists($envPath)) {
+            return;
+        }
+
+        $envContent = file_get_contents($envPath);
+
+        // Check if installer config already exists
+        if (strpos($envContent, 'INSTALLER_PRODUCT_ID') !== false) {
+            return;
+        }
+
+        // Add installer configuration to .env
+        $installerConfig = <<<EOT
+
+
+# Installer Configuration
+INSTALLER_PRODUCT_ID=1
+INSTALLER_LICENSE_API_URL=https://api.codelone.com/verify-license
+INSTALLER_VERIFY_SSL=true
+
+EOT;
+
+        file_put_contents($envPath, $envContent . $installerConfig);
     }
 
     protected function registerRoutes()

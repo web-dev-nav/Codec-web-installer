@@ -26,9 +26,15 @@ class LicenseValidator
                 'request_data' => $requestData,
             ]);
             
+            // Disable SSL verification on localhost/local environment
+            $verifySsl = config('installer.license_api.verify_ssl', true);
+            if (app()->environment('local') || $this->isLocalEnvironment()) {
+                $verifySsl = false;
+            }
+
             $response = Http::timeout(config('installer.license_api.timeout', 60))
                 ->withOptions([
-                    'verify' => config('installer.license_api.verify_ssl', true),
+                    'verify' => $verifySsl,
                 ])
                 ->withHeaders([
                     'Content-Type' => 'application/json',
@@ -170,7 +176,17 @@ class LicenseValidator
             'document_root' => $_SERVER['DOCUMENT_ROOT'] ?? '',
             'os' => PHP_OS,
         ];
-        
+
         return hash('sha256', json_encode($data));
+    }
+
+    protected function isLocalEnvironment(): bool
+    {
+        $domain = $this->getCurrentDomain();
+        $localDomains = ['localhost', '127.0.0.1', '::1'];
+
+        return in_array($domain, $localDomains) ||
+               str_ends_with($domain, '.local') ||
+               str_ends_with($domain, '.test');
     }
 }

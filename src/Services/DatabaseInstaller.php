@@ -90,14 +90,36 @@ class DatabaseInstaller
     }
 
 
-    protected function executeSqlFile(array $credentials, string $sqlContent): array
+    protected function executeSqlFile(array $credentials, $sqlContent): array
     {
         try {
+            // Handle different data formats
+            if (is_array($sqlContent)) {
+                // If it's an array, get the SQL content from it
+                $sqlContent = $sqlContent['sql'] ?? $sqlContent['content'] ?? '';
+            } elseif (is_string($sqlContent) && (substr($sqlContent, 0, 2) === 'a:' || substr($sqlContent, 0, 2) === 's:' || substr($sqlContent, 0, 2) === 'i:')) {
+                // If it's serialized PHP data, unserialize it
+                $unserialized = @unserialize($sqlContent);
+                if ($unserialized !== false) {
+                    $sqlContent = is_array($unserialized) ? ($unserialized['sql'] ?? $unserialized['content'] ?? '') : $unserialized;
+                }
+            }
+
+            // Ensure we have a string
+            $sqlContent = (string) $sqlContent;
+
             Log::info('SQL Content received', [
                 'length' => strlen($sqlContent),
                 'first_100_chars' => substr($sqlContent, 0, 100),
                 'type' => gettype($sqlContent),
             ]);
+
+            if (empty($sqlContent)) {
+                return [
+                    'success' => false,
+                    'message' => 'SQL content is empty. Please contact support.',
+                ];
+            }
 
             $dsn = "mysql:host={$credentials['db_host']};port={$credentials['db_port']};dbname={$credentials['db_name']};charset=utf8mb4";
 
