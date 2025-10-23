@@ -117,21 +117,28 @@ class InstallerController extends Controller
 
     public function complete()
     {
-        // Verify that installation was completed in this session
-        if (!Session::get('installer.completed')) {
-            // If lock file exists, show already installed message
-            if (file_exists(config('installer.lock_file'))) {
-                return view('installer::already-installed');
-            }
-            // Otherwise redirect to welcome
+        // Check if lock file already exists (already completed before)
+        if (file_exists(config('installer.lock_file')) && !Session::get('installer.completed')) {
+            return view('installer::already-installed');
+        }
+
+        // If no completion flag and no lock file, redirect to start
+        if (!Session::get('installer.completed') && !file_exists(config('installer.lock_file'))) {
             return redirect()->route('installer.welcome');
         }
 
-        // Create lock file now that user has seen the complete page
-        $this->createLockFile();
+        // Create lock file now that user is viewing the complete page
+        if (!file_exists(config('installer.lock_file'))) {
+            $this->createLockFile();
+        }
 
-        // Clear installer session data
-        Session::forget('installer');
+        // Mark that we've shown the complete page, so we can clear session on next request
+        Session::put('installer.shown_complete', true);
+
+        // Clear the completion flag now that lock file is created
+        // But keep the session data briefly so the page can render
+        Session::forget('installer.completed');
+        Session::forget('installer.completed_at');
 
         return view('installer::complete');
     }
