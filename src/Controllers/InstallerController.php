@@ -98,16 +98,17 @@ class InstallerController extends Controller
         $credentials = $request->only(['db_host', 'db_port', 'db_name', 'db_username', 'db_password']);
         $credentials['db_password'] = $credentials['db_password'] ?? '';
         $productData = Session::get('installer.product_data');
-        
+
         if (!$productData) {
             return back()->withErrors(['database' => 'Product data not found. Please verify your license again.']);
         }
-        
+
         $result = $this->databaseInstaller->install($credentials, $productData);
 
         if ($result['success']) {
-            $this->createLockFile();
-            Session::forget('installer');
+            // Mark installation as completed but don't create lock file yet
+            Session::put('installer.completed', true);
+            Session::put('installer.completed_at', now());
             return redirect()->route('installer.complete');
         }
 
@@ -116,6 +117,22 @@ class InstallerController extends Controller
 
     public function complete()
     {
+        // Verify that installation was completed in this session
+        if (!Session::get('installer.completed')) {
+            // If lock file exists, show already installed message
+            if (file_exists(config('installer.lock_file'))) {
+                return view('installer::already-installed');
+            }
+            // Otherwise redirect to welcome
+            return redirect()->route('installer.welcome');
+        }
+
+        // Create lock file now that user has seen the complete page
+        $this->createLockFile();
+
+        // Clear installer session data
+        Session::forget('installer');
+
         return view('installer::complete');
     }
 
