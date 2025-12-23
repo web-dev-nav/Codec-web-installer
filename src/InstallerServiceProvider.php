@@ -57,7 +57,7 @@ class InstallerServiceProvider extends ServiceProvider
 
 # Installer Configuration
 INSTALLER_PRODUCT_ID=1
-INSTALLER_LICENSE_API_URL=https://api.codelone.com/verify-license
+INSTALLER_LICENSE_API_URL=https://api.brainandbolt.com/api/verify-license
 INSTALLER_VERIFY_SSL=true
 
 EOT;
