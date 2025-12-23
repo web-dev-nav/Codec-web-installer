@@ -38,7 +38,7 @@ php artisan vendor:publish --tag=installer-config
 Update your `.env` file with the API endpoint and product ID:
 
 ```env
-INSTALLER_LICENSE_API_URL=https://api.yoursite.com/api/verify-license
+INSTALLER_LICENSE_API_URL=https://api.yoursite.com/verify-license
 INSTALLER_PRODUCT_ID=1
 ```
 
@@ -157,3 +157,4 @@ If you discover any security related issues, please email security@yourvendor.co
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
