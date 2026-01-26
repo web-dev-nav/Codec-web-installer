@@ -17,36 +17,65 @@ A WordPress-like installer package for Laravel applications that provides a smoo
 - **Security Features**: Installation lock, CSRF protection, and secure API communication
 - **Wide Compatibility**: Supports PHP 7.4 through 8.4 and Laravel 8 through 12
 
-## Installation
-
-Install the package via Composer:
+## Quick Start
 
 ```bash
-composer require your-vendor/laravel-installer
+composer require codelone/codec-web-installer
 ```
 
-The package will auto-register the service provider in Laravel 5.5+.
+```env
+INSTALLER_LICENSE_API_URL=https://api.brainandbolt.com/api/verify-license
+INSTALLER_PRODUCT_ID=1
+INSTALLER_VERIFY_SSL=true
+```
 
-## Configuration
+Visit `/installer` in your browser and follow the steps.
 
-Publish the configuration file:
+## Installation
+
+### 1. Require the package
+
+```bash
+composer require codelone/codec-web-installer
+```
+
+Laravel auto-discovers the service provider (no manual registration needed).
+
+### 2. Publish configuration (optional, recommended)
 
 ```bash
 php artisan vendor:publish --tag=installer-config
 ```
 
-Update your `.env` file with the API endpoint and product ID:
+### 3. (Optional) Publish views for customization
+
+```bash
+php artisan vendor:publish --tag=installer-views
+```
+
+### 4. Configure environment variables
+
+Add or update these in your `.env` file:
 
 ```env
-INSTALLER_LICENSE_API_URL=https://api.yoursite.com/api/verify-license
+INSTALLER_LICENSE_API_URL=https://api.brainandbolt.com/api/verify-license
 INSTALLER_PRODUCT_ID=1
+INSTALLER_VERIFY_SSL=true
+```
+
+Note: the service provider will append these variables to `.env` if they are missing, using the defaults in `config/installer.php`.
+
+### 5. Clear cached routes (only if you cache routes)
+
+```bash
+php artisan route:clear
 ```
 
 ## Usage
 
 ### 1. Access the Installer
 
-Visit `/installer` in your browser to start the installation process.
+Visit `/installer` in your browser to start the installation process (or the custom prefix set in `config/installer.php`).
 
 ### 2. Installation Steps
 
@@ -58,7 +87,7 @@ Visit `/installer` in your browser to start the installation process.
 
 ### 3. API Endpoint
 
-Your server should provide this API endpoint:
+Your server should provide this API endpoint (update the URL above to match your server if you are not using the default):
 
 #### License Verification Endpoint
 ```
@@ -138,13 +167,6 @@ After successful installation, a lock file is created at `storage/installer.lock
 1. Delete the lock file
 2. Clear browser cache
 3. Visit `/installer` again
-
-## Requirements
-
-- PHP 8.2 or higher
-- Laravel 10.0 or higher (supports Laravel 12.x)
-- Required PHP extensions (see configuration)
-- Writable storage directories
 
 ## Contributing
 
